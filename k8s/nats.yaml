@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats
+  labels:
+    app: nats
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nats
+  template:
+    metadata:
+      labels:
+        app: nats
+    spec:
+      containers:
+      - name: nats
+        image: nats:2.10-alpine
+        ports:
+        - containerPort: 4222
+        - containerPort: 8222
+        args:
+        - "--jetstream"
+        - "--http_port=8222"
+        - "--port=4222"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-service
+  labels:
+    app: nats
+spec:
+  type: ClusterIP
+  ports:
+  - name: client
+    port: 4222
+    targetPort: 4222
+    protocol: TCP
+  - name: monitoring
+    port: 8222
+    targetPort: 8222
+    protocol: TCP
+  selector:
+    app: nats

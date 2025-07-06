@@ -212,17 +212,6 @@ Prometheus metrics endpoint.
    go run cmd/main.go
    ```
 
-### Testing
-
-
-### Load Testing
-
-```bash
-# Install k6 (if not already installed)
-# Test click endpoint
-k6 run scripts/load-test.js
-```
-
 ## Configuration
 
 ### Environment Variables
@@ -241,7 +230,7 @@ k6 run scripts/load-test.js
 | `REDIS_PORT` | `6379` | Redis port |
 | `REDIS_PASSWORD` | `` | Redis password |
 | `REDIS_DB` | `0` | Redis database |
-| `KAFKA_BROKER` | `localhost:9092` | Kafka broker |
+| `NATS_URL` | `localhost:9092` | Kafka broker |
 
 ## Performance & Scalability
 
@@ -265,7 +254,7 @@ k6 run scripts/load-test.js
 - **HTTP Requests**: Request count, duration, status codes
 - **Database Operations**: Query performance and errors
 - **Redis Operations**: Cache hit/miss rates
-- **Kafka Operations**: Message throughput and errors
+- **NATS Operations**: Message throughput and errors
 - **Application Metrics**: Click processing rates
 
 ### Dashboards (Grafana)

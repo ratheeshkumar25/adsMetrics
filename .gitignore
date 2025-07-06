@@ -1,0 +1,90 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+coverage.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env.local
+.env.production
+.env.staging
+
+# Docker
+.dockerignore
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.sql.bak
+backup_*.sql
+
+# Temporary files
+tmp/
+temp/
+
+# Build artifacts
+dist/
+build/
+
+# Test artifacts
+*.test.log
+
+# Performance files
+*.prof
+
+# Local development
+local/
+dev/
+
+# Kubernetes secrets
+secrets/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Prometheus data
+prometheus-data/
+
+# Grafana data
+grafana-data/

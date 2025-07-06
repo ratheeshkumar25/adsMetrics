@@ -142,7 +142,7 @@ Records a click event (asynchronous processing).
   "video_play_time": 30,
   "timestamp": "2024-01-01T12:00:00Z"
 }
-```
+```clr
 
 **Response (202 Accepted):**
 ```json

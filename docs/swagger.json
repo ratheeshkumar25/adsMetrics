@@ -1,0 +1,265 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A high-performance, scalable ads metric tracking system built with Go.\n\nThis API provides endpoints for:\n- Fetching ads with basic metadata\n- Recording ad click events with resilient, non-blocking processing\n- Retrieving real-time analytics and performance metrics\n\n## Key Features\n- **High Throughput**: Handles concurrent requests under high traffic\n- **Data Resilience**: No data loss with fallback mechanisms\n- **Real-time Analytics**: Near real-time performance metrics\n- **Scalable Architecture**: Built with microservices patterns\n- **Production Ready**: Docker containerized with monitoring",
+        "title": "Ads Metric Tracker API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "https://github.com/ratheeshkumar25/adsmetrictracker",
+            "email": "support@adsmetrictracker.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/ads": {
+            "get": {
+                "description": "Returns a list of ads with basic metadata.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "Get all ads",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.GetAdsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ads/analytics": {
+            "get": {
+                "description": "Returns real-time analytics for a specific ad or all ads.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get ad analytics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by Ad ID",
+                        "name": "ad_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time window (1m, 5m, 15m, 1h, 24h)",
+                        "name": "timeframe",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.AnalyticsOverview"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ads/click": {
+            "post": {
+                "description": "Accepts a click payload and processes it asynchronously.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clicks"
+                ],
+                "summary": "Record ad click event",
+                "parameters": [
+                    {
+                        "description": "Click event data",
+                        "name": "click",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ClickRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ClickResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handlers.AdResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "target_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.AnalyticsOverview": {
+            "type": "object",
+            "properties": {
+                "analytics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/services.AnalyticsResponse"
+                    }
+                },
+                "generated_at": {
+                    "type": "string"
+                },
+                "timeframe": {
+                    "type": "string"
+                },
+                "total_ads": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.ClickRequest": {
+            "type": "object",
+            "required": [
+                "ad_id"
+            ],
+            "properties": {
+                "ad_id": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "video_play_time": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.ClickResponse": {
+            "type": "object",
+            "properties": {
+                "ad_id": {
+                    "type": "string"
+                },
+                "click_id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "processing": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.GetAdsResponse": {
+            "type": "object",
+            "properties": {
+                "ads": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.AdResponse"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "services.AnalyticsResponse": {
+            "type": "object",
+            "properties": {
+                "ad_id": {
+                    "type": "string"
+                },
+                "ctr": {
+                    "type": "number"
+                },
+                "time_frames": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "total_clicks": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "https://swagger.io/resources/open-api/"
+    }
+}

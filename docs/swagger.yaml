@@ -1,0 +1,187 @@
+basePath: /
+definitions:
+  handlers.AdResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      target_url:
+        type: string
+    type: object
+  handlers.AnalyticsOverview:
+    properties:
+      analytics:
+        items:
+          $ref: '#/definitions/services.AnalyticsResponse'
+        type: array
+      generated_at:
+        type: string
+      timeframe:
+        type: string
+      total_ads:
+        type: integer
+    type: object
+  handlers.ClickRequest:
+    properties:
+      ad_id:
+        type: string
+      ip:
+        type: string
+      timestamp:
+        type: string
+      video_play_time:
+        type: integer
+    required:
+    - ad_id
+    type: object
+  handlers.ClickResponse:
+    properties:
+      ad_id:
+        type: string
+      click_id:
+        type: string
+      message:
+        type: string
+      processing:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  handlers.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  handlers.GetAdsResponse:
+    properties:
+      ads:
+        items:
+          $ref: '#/definitions/handlers.AdResponse'
+        type: array
+      count:
+        type: integer
+    type: object
+  services.AnalyticsResponse:
+    properties:
+      ad_id:
+        type: string
+      ctr:
+        type: number
+      time_frames:
+        additionalProperties:
+          type: integer
+        type: object
+      timestamp:
+        type: string
+      total_clicks:
+        type: integer
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8080
+info:
+  contact:
+    email: support@adsmetrictracker.com
+    name: API Support
+    url: https://github.com/ratheeshkumar25/adsmetrictracker
+  description: |-
+    A high-performance, scalable ads metric tracking system built with Go.
+
+    This API provides endpoints for:
+    - Fetching ads with basic metadata
+    - Recording ad click events with resilient, non-blocking processing
+    - Retrieving real-time analytics and performance metrics
+
+    ## Key Features
+    - **High Throughput**: Handles concurrent requests under high traffic
+    - **Data Resilience**: No data loss with fallback mechanisms
+    - **Real-time Analytics**: Near real-time performance metrics
+    - **Scalable Architecture**: Built with microservices patterns
+    - **Production Ready**: Docker containerized with monitoring
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Ads Metric Tracker API
+  version: "1.0"
+paths:
+  /ads:
+    get:
+      description: Returns a list of ads with basic metadata.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GetAdsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get all ads
+      tags:
+      - ads
+  /ads/analytics:
+    get:
+      description: Returns real-time analytics for a specific ad or all ads.
+      parameters:
+      - description: Filter by Ad ID
+        in: query
+        name: ad_id
+        type: string
+      - description: Time window (1m, 5m, 15m, 1h, 24h)
+        in: query
+        name: timeframe
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.AnalyticsOverview'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get ad analytics
+      tags:
+      - Analytics
+  /ads/click:
+    post:
+      consumes:
+      - application/json
+      description: Accepts a click payload and processes it asynchronously.
+      parameters:
+      - description: Click event data
+        in: body
+        name: click
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ClickRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/handlers.ClickResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Record ad click event
+      tags:
+      - clicks
+swagger: "2.0"

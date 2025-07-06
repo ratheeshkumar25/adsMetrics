@@ -279,6 +279,56 @@ k6 run scripts/load-test.js
 - **Log Rotation**: Automated log file management
 - **Log Levels**: Debug, Info, Warn, Error
 
+## CI/CD
+
+### Docker Image Publishing
+
+```bash
+# Build Docker image
+docker build -t your-username/ads-metric-tracker:latest .
+
+# Push to Docker Hub
+docker push your-username/ads-metric-tracker:latest
+```
+
+### GitHub Actions (Optional)
+
+Create `.github/workflows/ci-cd.yaml`:
+
+```yaml
+name: Build and Push
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        tags: your-username/ads-metric-tracker:latest
+```
+
+### Swagger Documentation
+
+Regenerate docs after API changes:
+
+```bash
+swag init -g cmd/main.go -o docs
+```
+
 ## Deployment
 
 ### Production Deployment
@@ -290,7 +340,7 @@ k6 run scripts/load-test.js
 
 2. **Deploy with Docker Compose**
    ```bash
-   docker-compose -f docker-compose.prod.yaml up -d
+   docker-compose -f docker-compose.nats.yaml up -d
    ```
 
 3. **Kubernetes (Optional)**

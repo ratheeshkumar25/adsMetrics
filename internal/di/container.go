@@ -12,6 +12,7 @@ import (
 	"github.com/ratheeshkumar25/adsmetrictracker/internal/handlers/routes"
 	"github.com/ratheeshkumar25/adsmetrictracker/internal/model"
 	"github.com/ratheeshkumar25/adsmetrictracker/internal/repo"
+	"github.com/ratheeshkumar25/adsmetrictracker/internal/seed"
 	"github.com/ratheeshkumar25/adsmetrictracker/internal/services"
 	"github.com/ratheeshkumar25/adsmetrictracker/pkg/breaker"
 	"github.com/ratheeshkumar25/adsmetrictracker/pkg/logger"
@@ -32,6 +33,12 @@ func Init() (*gin.Engine, error) {
 	database, err := db.NewDatabase(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
+	}
+
+	//Seed data aftter database initialization
+	seeder := seed.NewSeeder(database.PostgresDB)
+	if err := seeder.SeedAll(); err != nil {
+		return nil, fmt.Errorf("failed to seed database: %w", err)
 	}
 
 	// Initialize circuit breaker
@@ -140,10 +147,16 @@ func NewContainer() (*Container, error) {
 		return nil, fmt.Errorf("failed to initialize database: %w", err)
 	}
 
+	// Seed data after database initialization
+	seeder := seed.NewSeeder(container.Database.PostgresDB)
+	if err := seeder.SeedAll(); err != nil {
+		return nil, fmt.Errorf("failed to seed database: %w", err)
+	}
+	// Initialize circuit breaker
 	if err := container.initCircuitBreaker(); err != nil {
 		return nil, fmt.Errorf("failed to initialize circuit breaker: %w", err)
 	}
-
+	// Initialize repositories
 	if err := container.initRepositories(); err != nil {
 		return nil, fmt.Errorf("failed to initialize repositories: %w", err)
 	}

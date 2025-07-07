@@ -149,7 +149,7 @@ test-comprehensive: ## Run comprehensive requirements test
 	@echo "🧪 Running comprehensive requirements test..."
 	./test_requirements.sh
 
-load-test: ## Run bash-based load test (full test suite)
+load-test-basic: ## Run bash-based load test (full test suite)
 	@echo "🚀 Running comprehensive load test using bash/curl..."
 	@if [ -f test_api.sh ]; then \
 		chmod +x test_api.sh && ./test_api.sh; \
@@ -177,6 +177,7 @@ load-test: ## Run load test (100 requests)
 	done; wait; \
 	end_time=$$(date +%s); \
 	duration=$$((end_time - start_time)); \
+	if [$$duration -eq 0];then duration=1; fi; \
 	rps=$$((100 / duration)); \
 	echo "✅ Load test completed in $${duration}s ($$rps RPS)"
 
